@@ -1,0 +1,51 @@
+;A) Escribir un programa que muestre en pantalla
+;“Vamos las interrupciones!” cada vez que se presiona la
+;tecla F10. El programa nunca termina.
+
+;B) Idem A pero ahora el programa termina luego de 
+;mostrar 5 veces el mensaje (es decir, luego que se
+;presione 5 veces la tecla F10).
+
+
+EOI EQU 20H
+IMR EQU 21H
+INT0 EQU 24H
+
+F_10 EQU 15
+
+  ORG 1000H
+TEXTO DB "VAMOS LAS INTERRUPCIONES.", 0AH
+FIN   DB "."
+
+  ORG 60
+IP_F10 DW RUT_F10
+
+  ORG 2000H
+CLI
+MOV CL, 0
+MOV AL, 11111110B
+OUT IMR, AL
+MOV AL, F_10
+OUT INT0, AL
+STI
+
+LAZO: 
+CMP CL, 5
+JZ FINI
+JMP LAZO
+
+  ORG 3000H
+RUT_F10:
+PUSH AX
+MOV BX, OFFSET TEXTO
+MOV AL, OFFSET FIN - OFFSET TEXTO
+INT 7
+INC CL
+MOV AL, EOI
+OUT EOI, AL
+POP AX
+IRET
+
+FINI: 
+INT 0
+END
