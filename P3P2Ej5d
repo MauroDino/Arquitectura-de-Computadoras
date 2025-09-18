@@ -1,0 +1,65 @@
+;5) Timer, tres usos: periódico infinito, periódico finito,
+;y única vez ⭐⭐
+;a) Escribir un programa que muestra el mensaje 
+;“Vamos las interrupciones!” una vez cada 2 segundos y
+;no termine nunca
+;d) Desafío: Modificar a) para que el primer mensaje 
+;se imprima luego de 1 segundo, el segundo luego de 2
+;segundos, el tercero luego de 3, y así sucesivamente, 
+;hasta que se espere 255 en el último mensaje, y el
+;programa termine
+
+
+EOI EQU 20H
+IMR EQU 21H
+INT1 EQU 25H
+
+CONT EQU 10H
+COMP EQU 11H
+
+N_TIMER EQU 15
+
+  ORG 1000H
+TEXTO DB "VAMOS LAS INTERRUPCIONES", 0AH
+FIN   DB "."
+
+  ORG 60
+IP_TIMER DW RUT_TIMER
+
+
+  ORG 2000H
+MOV CL, 1
+CLI
+MOV AL, 11111101B
+OUT IMR, AL
+MOV AL, N_TIMER
+OUT INT1, AL
+MOV AL, 1
+OUT COMP, AL
+MOV AL, 0
+OUT CONT, AL
+STI
+LOOP: 
+MOV AL, CL
+OUT COMP, AL
+JMP LOOP
+
+
+  ORG 3000H
+RUT_TIMER:
+PUSH AX
+MOV BX, OFFSET TEXTO
+MOV AL, OFFSET FIN - OFFSET TEXTO
+INT 7
+
+INC CL
+MOV AL, 0
+OUT CONT, AL
+MOV AL, EOI
+OUT EOI, AL
+POP AX
+IRET
+
+FINI:
+INT 0
+END
