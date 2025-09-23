@@ -1,0 +1,60 @@
+;Ruleta, F10 y azar ⭐⭐ Escribir un programa que permita 
+;seleccionar un dígito al azar para jugar a la
+;ruleta. Para eso, el programa principal debe iterar 
+;continuamente, cambiando un valor de un registro
+;desde el ‘0’ hasta el ‘9’ (y volviendo al ‘0’ luego 
+;del ‘9’). Cuando se presiona F10, la letra queda
+;“seleccionada” en base al valor del registro, y debe 
+;mostrarse de inmediato en la pantalla. Luego el
+;programa termina
+
+EOI EQU 20H
+IMR EQU 21H
+
+INT0 EQU 24H
+
+F10 EQU 10
+
+
+    ORG 1000H
+NUM DB 30H
+STOP DB 30H
+
+
+    ORG 40
+  DW RUT_F10
+
+    ORG 2000H
+  CLI
+  MOV AL, 11111110B
+  OUT IMR, AL
+  MOV AL, F10
+  OUT INT0, AL
+  STI
+SUMAR:
+  CMP STOP, 31H
+  JZ LISTO
+  INC NUM
+  CMP NUM, 39H
+  JNZ SUMAR
+RESTAR:
+  DEC NUM
+  CMP NUM, 30H
+  JZ SUMAR
+  JMP RESTAR
+
+    ORG 3000H
+RUT_F10:
+  PUSH AX
+  MOV BX, OFFSET NUM
+  MOV AL, 1
+  INT 7
+  MOV STOP, 31H
+  MOV AL, EOI
+  OUT EOI, AL
+  POP AX
+  IRET
+
+LISTO:
+  INT 0
+  END
