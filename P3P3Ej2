@@ -1,0 +1,60 @@
+;F10 y Luces ⭐⭐ 
+;Escribir un programa que al presionar F10 encienda 
+;todas las luces, y al presionarlo nuevamente las apague. 
+;El programa nunca termina
+
+EOI EQU 20H
+IMR EQU 21H
+
+;0 SALIDA, 1 ENTRADA
+PB EQU 31H
+CB EQU 33H
+
+INT0 EQU 24H
+
+F10 EQU 10
+
+
+    ORG 1000H
+;STOP DB 30H
+
+
+    ORG 40
+  DW RUT_F10
+
+    ORG 2000H
+  CLI
+  MOV AL, 11111110B
+  OUT IMR, AL
+  MOV AL, F10
+  OUT INT0, AL
+  MOV AL, 00000000
+  OUT CB, AL
+  MOV AL, 11111111B
+  OUT PB, AL  
+  STI
+LOOP:
+  JMP LOOP
+
+    ORG 3000H
+RUT_F10:
+    PUSH AX
+    IN AL, PB
+    OR AL, 0
+    CMP AL, 00000000B
+    JZ PRENDER
+    MOV AL, 00000000B
+    OUT PB, AL
+    JMP SIGO
+  PRENDER:
+    MOV AL, 11111111B
+    OUT PB, AL
+  SIGO:
+    MOV AL, EOI
+    OUT EOI, AL
+    POP AX
+    IRET
+  
+;LISTO:
+  INT 0
+  END
